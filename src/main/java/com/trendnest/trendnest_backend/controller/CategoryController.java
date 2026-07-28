@@ -1,0 +1,29 @@
+package com.trendnest.trendnest_backend.controller;
+
+import com.trendnest.trendnest_backend.dto.CategoryRequestDTO;
+import com.trendnest.trendnest_backend.dto.CategoryResponseDTO;
+import com.trendnest.trendnest_backend.service.impl.CategoryServiceImpl;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController // this handles http request and return json response.
+@RequestMapping("/api/categories")
+public class CategoryController {
+    // used constructor injection
+    private final CategoryServiceImpl categoryService;
+
+    public CategoryController(CategoryServiceImpl categoryService) {
+        this.categoryService = categoryService;
+    }
+    // requestbody converts json body into java object.
+    @PostMapping
+    public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody CategoryRequestDTO request) {
+        CategoryResponseDTO categoryresponseDTO = categoryService.createCategory(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryresponseDTO);
+    }
+}
