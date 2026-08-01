@@ -41,10 +41,23 @@ public class CategoryServiceImpl implements CategoryService {
                 .build();
 
     }
-
+// Think of a Stream as a pipeline that lets you process every element one by one.
+//
+//Instead of writing loops, you write operations like map, filter, and sorted.
+// tool all data from database in list then by using pipeline pass it one by one then map the data and made dto
+// of entity data.
     @Override
     public List<CategoryResponseDTO> getAllCategories() {
-        return List.of();
+        return categoryRepository.findAll()
+                .stream()
+                .map(category -> CategoryResponseDTO.builder()
+                        .id(category.getId())
+                        .name(category.getName())
+                        .description(category.getDescription())
+                        .imageUrl(category.getImageUrl())
+                        .active(category.getActive())
+                        .build())
+                .toList();
     }
 
     @Override
