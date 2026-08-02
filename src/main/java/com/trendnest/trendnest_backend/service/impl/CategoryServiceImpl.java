@@ -4,20 +4,25 @@ import com.trendnest.trendnest_backend.dto.CategoryRequestDTO;
 import com.trendnest.trendnest_backend.dto.CategoryResponseDTO;
 import com.trendnest.trendnest_backend.entity.Category;
 import com.trendnest.trendnest_backend.exception.CategoryAlreadyExistsException;
+import com.trendnest.trendnest_backend.exception.ResourceNotFoundException;
+import com.trendnest.trendnest_backend.mapper.CategoryMapper;
 import com.trendnest.trendnest_backend.repository.CategoryRepository;
 import com.trendnest.trendnest_backend.service.CategoryService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 // this annotation denotes that in this class contain business logics
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
     }
 
     @Override
@@ -62,12 +67,32 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponseDTO getCategoryById(Long id) {
-        return null;
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(()->
+                        new ResourceNotFoundException("Category not found " + id));
+        return CategoryResponseDTO.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .description(category.getDescription())
+                .imageUrl(category.getImageUrl())
+                .active(category.getActive())
+                .build();
     }
 
     @Override
     public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO request) {
-        return null;
+        Category category  = categoryRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("category not found " + id));
+        Optional<Category> ExistingCategory = categoryRepository.findByName(request.getName());
+        if(ExistingCategory.isPresent() && category.getName().equals(request.getName())){
+            throw new CategoryAlreadyExistsException("Category already exists " +  request.getName() );
+        }
+        category.setName(request.getName());
+        category.setDescription(request.getDescription());
+        category.setImageUrl(request.getImageUrl());
+
+        categoryRepository.save(category);
+        return categoryMapper.toResponseDTO(category);
     }
 
     @Override
