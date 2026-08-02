@@ -37,6 +37,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id){
         return  ResponseEntity.ok(categoryService.getCategoryById(id));
     }
+    // change entire data
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponseDTO> updateCategory(
             @PathVariable Long id,
@@ -44,4 +45,11 @@ public class CategoryController {
 
         return ResponseEntity.ok(categoryService.updateCategory(id, requestDTO));
     }
+    // void defines no content body.
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id){
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
+    }
+    // patch used to change the specific data.
 }

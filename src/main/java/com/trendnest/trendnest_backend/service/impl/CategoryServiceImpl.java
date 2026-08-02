@@ -84,7 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category  = categoryRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("category not found " + id));
         Optional<Category> ExistingCategory = categoryRepository.findByName(request.getName());
-        if(ExistingCategory.isPresent() && category.getName().equals(request.getName())){
+        if(ExistingCategory.isPresent() && !ExistingCategory.get().getId().equals(id)){
             throw new CategoryAlreadyExistsException("Category already exists " +  request.getName() );
         }
         category.setName(request.getName());
@@ -97,6 +97,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Long id) {
+        // it returns optional value
+        Category category  = categoryRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("category not found " + id));
+        categoryRepository.delete(category);
 
     }
 }

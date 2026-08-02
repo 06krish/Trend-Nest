@@ -24,9 +24,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse>handleResourceNotFoundException(ResourceNotFoundException e, HttpServletRequest request){
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.CONTINUE.value())
+                .status(HttpStatus.NOT_FOUND.value())
                 .message(e.getMessage())
-                .error(HttpStatus.CONFLICT.getReasonPhrase())
+                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .path(request.getRequestURI())
                 .build();
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
