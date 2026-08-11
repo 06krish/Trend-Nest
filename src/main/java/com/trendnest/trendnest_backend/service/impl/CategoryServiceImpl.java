@@ -116,19 +116,14 @@ public class CategoryServiceImpl implements CategoryService {
 
         // Update name
         if (updates.containsKey("name")) {
-
             String newName = (String) updates.get("name");
-
             Optional<Category> existingCategory =
                     categoryRepository.findByName(newName);
-
             if (existingCategory.isPresent()
                     && !existingCategory.get().getId().equals(id)) {
-
                 throw new CategoryAlreadyExistsException(
                         "Category already exists: " + newName);
             }
-
             category.setName(newName);
         }
 
