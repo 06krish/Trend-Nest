@@ -11,6 +11,7 @@ import com.trendnest.trendnest_backend.service.CategoryService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -102,5 +103,49 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(()->new ResourceNotFoundException("category not found " + id));
         categoryRepository.delete(category);
 
+    }
+    @Override
+    public CategoryResponseDTO patchCategory(
+            Long id,
+            Map<String, Object> updates) {
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Category not found " + id));
+
+        // Update name
+        if (updates.containsKey("name")) {
+
+            String newName = (String) updates.get("name");
+
+            Optional<Category> existingCategory =
+                    categoryRepository.findByName(newName);
+
+            if (existingCategory.isPresent()
+                    && !existingCategory.get().getId().equals(id)) {
+
+                throw new CategoryAlreadyExistsException(
+                        "Category already exists: " + newName);
+            }
+
+            category.setName(newName);
+        }
+
+        // Update description
+        if (updates.containsKey("description")) {
+            category.setDescription(
+                    (String) updates.get("description"));
+        }
+
+        // Update image
+        if (updates.containsKey("imageUrl")) {
+            category.setImageUrl(
+                    (String) updates.get("imageUrl"));
+        }
+
+        categoryRepository.save(category);
+
+        return categoryMapper.toResponseDTO(category);
     }
 }

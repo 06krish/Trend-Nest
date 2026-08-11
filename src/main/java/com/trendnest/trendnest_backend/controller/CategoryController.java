@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController // this handles http request and return json response.
 @RequestMapping("/api/categories")
@@ -52,4 +53,10 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
     // patch used to change the specific data.
+    @PatchMapping("/{id}")
+    public ResponseEntity<CategoryResponseDTO> patchCategory(
+            @PathVariable Long id,
+            @RequestBody Map<String,Object> update){
+        return ResponseEntity.ok(categoryService.patchCategory(id,update));
+    }
 }

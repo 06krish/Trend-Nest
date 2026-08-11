@@ -4,6 +4,7 @@ import com.trendnest.trendnest_backend.dto.CategoryResponseDTO;
 import com.trendnest.trendnest_backend.dto.CategoryRequestDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CategoryService {
 
@@ -16,4 +17,8 @@ public interface CategoryService {
     CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO request);
 
     void deleteCategory(Long id);
+
+    CategoryResponseDTO patchCategory(
+            Long id,
+            Map<String, Object> updates);
 }
