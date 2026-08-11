@@ -3,7 +3,6 @@ package com.trendnest.trendnest_backend.controller;
 import com.trendnest.trendnest_backend.dto.ProductRequestDTO;
 import com.trendnest.trendnest_backend.dto.ProductResponseDTO;
 import com.trendnest.trendnest_backend.service.ProductService;
-import com.trendnest.trendnest_backend.service.impl.ProductServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
