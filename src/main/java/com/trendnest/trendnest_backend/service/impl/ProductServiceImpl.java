@@ -9,7 +9,9 @@ import com.trendnest.trendnest_backend.mapper.ProductMapper;
 import com.trendnest.trendnest_backend.repository.CategoryRepository;
 import com.trendnest.trendnest_backend.repository.ProductRepository;
 import com.trendnest.trendnest_backend.service.ProductService;
+import com.trendnest.trendnest_backend.specifications.ProductSpecifications;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -146,5 +148,45 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(()->
                         new ResourceNotFoundException("Product not found with id: " + id));
         productRepository.delete(product);
+    }
+    @Override
+    public List<ProductResponseDTO> searchProducts(
+            String name,
+            Long categoryId,
+            BigDecimal minPrice,
+            BigDecimal maxPrice) {
+
+        Specification<Product> specification = (root, query, criteriaBuilder) -> null;
+
+        if (name != null && !name.isBlank()) {
+            specification = specification.and(
+                    ProductSpecifications.hasName(name)
+            );
+        }
+
+        if (categoryId != null) {
+            specification = specification.and(
+                    ProductSpecifications.hasCategory(categoryId)
+            );
+        }
+
+        if (minPrice != null) {
+            specification = specification.and(
+                    ProductSpecifications.priceGreaterThanOrEqualTo(minPrice)
+            );
+        }
+
+        if (maxPrice != null) {
+            specification = specification.and(
+                    ProductSpecifications.priceLessThanOrEqualTo(maxPrice)
+            );
+        }
+
+        List<Product> products =
+                productRepository.findAll(specification);
+
+        return products.stream()
+                .map(productMapper::toResponseDTO)
+                .toList();
     }
 }
