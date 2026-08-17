@@ -21,7 +21,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse>handleResourceNotFoundException(ResourceNotFoundException e, HttpServletRequest request){
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
+            ResourceNotFoundException e,
+            HttpServletRequest request) {
+
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
@@ -29,6 +32,7 @@ public class GlobalExceptionHandler {
                 .error(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .path(request.getRequestURI())
                 .build();
+
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }

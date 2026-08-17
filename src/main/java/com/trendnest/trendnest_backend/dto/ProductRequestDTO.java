@@ -15,7 +15,7 @@ public class ProductRequestDTO {
     private String name;
     private String description;
 
-    @NotBlank(message = "Price is required")
+    @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price greater than 0")
     private BigDecimal price;
 
@@ -24,7 +24,7 @@ public class ProductRequestDTO {
     private Integer discount;
 
     private String ImageUrl;
-    @NotBlank(message = "Stock is required")
+    @NotNull(message = "Stock is required")
     @Min(value = 0, message = "Stock cannot be negative")
     private Integer stock;
 
