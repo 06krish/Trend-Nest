@@ -2,7 +2,10 @@ package com.trendnest.trendnest_backend.service;
 
 import com.trendnest.trendnest_backend.dto.ProductRequestDTO;
 import com.trendnest.trendnest_backend.dto.ProductResponseDTO;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +24,13 @@ public interface ProductService {
 
     void deleteProduct(Long id);
 
-    List<ProductResponseDTO> searchProducts(
+    Page<ProductResponseDTO> searchProducts(
             String name,
             Long categoryId,
             BigDecimal minPrice,
-            BigDecimal maxPrice
+            BigDecimal maxPrice,
+            int page,
+            int size,
+            String sort
     );
 }

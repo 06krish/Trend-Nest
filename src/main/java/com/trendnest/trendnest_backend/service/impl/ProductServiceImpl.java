@@ -13,6 +13,10 @@ import com.trendnest.trendnest_backend.specifications.ProductSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -150,13 +154,17 @@ public class ProductServiceImpl implements ProductService {
         productRepository.delete(product);
     }
     @Override
-    public List<ProductResponseDTO> searchProducts(
+    public Page<ProductResponseDTO> searchProducts(
             String name,
             Long categoryId,
             BigDecimal minPrice,
-            BigDecimal maxPrice) {
+            BigDecimal maxPrice,
+            int page,
+            int size,
+            String sort) {
 
-        Specification<Product> specification = (root, query, criteriaBuilder) -> null;
+        Specification<Product> specification =
+                (root, query, criteriaBuilder) -> null;
 
         if (name != null && !name.isBlank()) {
             specification = specification.and(
@@ -182,11 +190,29 @@ public class ProductServiceImpl implements ProductService {
             );
         }
 
-        List<Product> products =
-                productRepository.findAll(specification);
+        String[] sortParts = sort.split(",");
 
-        return products.stream()
-                .map(productMapper::toResponseDTO)
-                .toList();
+        String sortField = sortParts[0];
+
+        Sort.Direction direction =
+                sortParts.length > 1 &&
+                        sortParts[1].equalsIgnoreCase("desc")
+                        ? Sort.Direction.DESC
+                        : Sort.Direction.ASC;
+
+        Pageable pageable =
+                PageRequest.of(
+                        page,
+                        size,
+                        Sort.by(direction, sortField)
+                );
+
+        Page<Product> products =
+                productRepository.findAll(
+                        specification,
+                        pageable
+                );
+
+        return products.map(productMapper::toResponseDTO);
     }
 }
