@@ -1,5 +1,7 @@
 package com.trendnest.trendnest_backend.controller;
 
+import com.trendnest.trendnest_backend.dto.LoginRequestDTO;
+import com.trendnest.trendnest_backend.dto.LoginResponseDTO;
 import com.trendnest.trendnest_backend.dto.UserRequestDTO;
 import com.trendnest.trendnest_backend.dto.UserResponseDTO;
 import com.trendnest.trendnest_backend.service.UserService;
@@ -26,5 +28,11 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(
+            @Valid @RequestBody LoginRequestDTO request){
+        LoginResponseDTO response = userService.login(request);
+        return ResponseEntity.ok(response);
     }
 }
