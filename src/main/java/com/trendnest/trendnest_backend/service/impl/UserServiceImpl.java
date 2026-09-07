@@ -11,6 +11,7 @@ import com.trendnest.trendnest_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.trendnest.trendnest_backend.service.JwtService;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
     public UserResponseDTO register(UserRequestDTO request) {
@@ -49,16 +51,24 @@ public class UserServiceImpl implements UserService {
     public LoginResponseDTO login(LoginRequestDTO request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(()-> new RuntimeException("Invalid Email or Password"));
-        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new RuntimeException("Invalid Email or Password");
+                .orElseThrow(() ->
+                        new RuntimeException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword())) {
+
+            throw new RuntimeException("Invalid email or password");
         }
+
+        String token = jwtService.generateToken(user);
 
         return LoginResponseDTO.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .role(user.getRole())
+                .token(token)
                 .build();
     }
 }
