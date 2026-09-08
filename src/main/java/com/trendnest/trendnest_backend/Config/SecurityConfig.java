@@ -49,6 +49,25 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.DELETE, "/api/product/**")
                         .hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET,"/api/categories", "/api/categories/**")
+                        .authenticated()
+
+                        // category Post - ADMIN
+                        .requestMatchers(HttpMethod.POST,"/api/categories")
+                        .hasRole("ADMIN")
+
+                        // Category UPDATE - ADMIN
+                        .requestMatchers(HttpMethod.PUT, "/api/categories/**")
+                        .hasRole("ADMIN")
+
+                        // Category PATCH - ADMIN
+                        .requestMatchers(HttpMethod.PATCH, "/api/categories/**")
+                        .hasRole("ADMIN")
+
+                        // Category DELETE - ADMIN
+                        .requestMatchers(HttpMethod.DELETE, "/api/categories/**")
+                        .hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
