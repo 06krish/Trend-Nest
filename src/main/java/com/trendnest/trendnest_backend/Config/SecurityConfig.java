@@ -53,6 +53,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/categories", "/api/categories/**")
                         .authenticated()
 
+                        .requestMatchers("/api/cart/**")
+                        .authenticated()
+
                         // category Post - ADMIN
                         .requestMatchers(HttpMethod.POST,"/api/categories")
                         .hasRole("ADMIN")
