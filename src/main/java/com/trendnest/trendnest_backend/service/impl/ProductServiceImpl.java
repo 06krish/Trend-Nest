@@ -4,6 +4,7 @@ import com.trendnest.trendnest_backend.dto.ProductRequestDTO;
 import com.trendnest.trendnest_backend.dto.ProductResponseDTO;
 import com.trendnest.trendnest_backend.entity.Category;
 import com.trendnest.trendnest_backend.entity.Product;
+import com.trendnest.trendnest_backend.entity.ProductVariant;
 import com.trendnest.trendnest_backend.exception.ResourceNotFoundException;
 import com.trendnest.trendnest_backend.mapper.ProductMapper;
 import com.trendnest.trendnest_backend.repository.CategoryRepository;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import com.trendnest.trendnest_backend.repository.ProductVariantRepository;
 
 // here we are using lombok that's why we dont need to write @Autowired on every injection
 // we only have to write this @RequiredArgsConstructor and spring will automatically will inject these dependencies.
@@ -30,22 +32,38 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final ProductVariantRepository productVariantRepository;
     @Override
-    public ProductResponseDTO createProduct(ProductRequestDTO request){
-        Category category =  categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(()->
+    public ProductResponseDTO createProduct(ProductRequestDTO request) {
+
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() ->
                         new ResourceNotFoundException("Category Not Found"));
+
         Product product = Product.builder()
                 .name(request.getName())
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .discount(request.getDiscount())
                 .imageUrl(request.getImageUrl())
-                .stock(request.getStock())
                 .active(request.getActive())
                 .category(category)
                 .build();
-        Product savedProduct =  productRepository.save(product);
+
+        if (request.getVariants() != null) {
+            request.getVariants().forEach(variantRequest -> {
+                ProductVariant variant = ProductVariant.builder()
+                        .product(product)
+                        .size(variantRequest.getSize())
+                        .color(variantRequest.getColor())
+                        .stock(variantRequest.getStock())
+                        .sku(variantRequest.getSku())
+                        .build();
+
+                product.getVariants().add(variant);
+            });
+        }
+        Product savedProduct = productRepository.save(product);
         return productMapper.toResponseDTO(savedProduct);
     }
 
@@ -89,8 +107,6 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(request.getPrice());
         product.setDiscount(request.getDiscount());
         product.setImageUrl(request.getImageUrl());
-        product.setStock(request.getStock());
-        product.setActive(request.getActive());
         product.setCategory(category);
 
         Product updatedProduct = productRepository.save(product);
@@ -121,9 +137,6 @@ public class ProductServiceImpl implements ProductService {
                         Integer.valueOf(value.toString()));
 
                 case "imageUrl" -> product.setImageUrl((String) value);
-
-                case "stock" -> product.setStock(
-                        Integer.valueOf(value.toString()));
 
                 case "active" -> product.setActive(
                         (Boolean) value);

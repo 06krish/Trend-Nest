@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -39,4 +41,11 @@ public class Product {
     // it will tell hybernate to create a foreign key to connect in the product table.
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<ProductVariant> variants = new ArrayList<>();
 }
